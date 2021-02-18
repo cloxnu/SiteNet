@@ -23,7 +23,7 @@ class net:
         i = 0
         while self.search_queue and i < search_num:
             i += 1
-            print("\r正在搜索第 {} 次".format(i), end="")
+            print("\rsearching {} / {}".format(i, search_num), end="")
             url, current_url = self.search_queue[0]
             url = urljoin(current_url, urldefrag(url)[0])
             if url in self.all_sites:
@@ -44,7 +44,9 @@ class net:
     def draw(self):
         plt.figure(figsize=(50, 50))
         nx.draw(self.graph, node_size=500, node_color="#fff", font_color="#000", font_size=18, node_shape="s", edge_color="b", width=3, font_weight="bold", with_labels=True, labels=nx.get_node_attributes(self.graph, 'name'))
-        plt.savefig('res/{}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
+        res_path = 'res/{}.png'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+        plt.savefig(res_path)
+        print('result saved at {}'.format(res_path))
         plt.show()
 
 

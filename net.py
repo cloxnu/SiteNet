@@ -56,9 +56,9 @@ class site:
         print(", url: {}".format(url))
         try:
             with request.urlopen(url) as response:
-                html = response.read().decode('utf-8')
-        except error.HTTPError:
-            html = "HTTPError"
+                html = response.read()
+        except:
+            html = "error"
         soup = BeautifulSoup(html, 'html.parser')
         self.name, self.links = site.get_site_info(soup)
         self.links_to = []
@@ -68,7 +68,7 @@ class site:
 
     @staticmethod
     def get_site_info(soup: BeautifulSoup):
-        name = soup.title.text
+        name = soup.title.text if soup.title else "x"
         links = []
         for a in soup.find_all('a'):
             links.append(a.get('href'))

@@ -1,3 +1,15 @@
+
+# load & output
+load_path:
+output_dir: res/test
+search_num: 10
+output_image_size: 50
+
+# start with
 url: https://zh.wikipedia.org/wiki/Python
-search_num: 3000
-load_file:
+
+# URL limit
+url_limit:
+  url_regex:
+  netloc_regex: zh.wikipedia.org
+  path_regex:

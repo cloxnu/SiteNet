@@ -30,20 +30,23 @@ class net:
             print("\rsearching {} / {}, search times: {}".format(i, search_num, self.search_times), end="")
             url, current_url = self.search_queue[0]
             url = urljoin(current_url, urldefrag(url)[0])
-            if self.is_url_valid(url, info.get('url_filter')):
+            current_site = self.all_sites.get(current_url)
+            if self.is_url_valid(current_site, url, info.get('url_filter')):
                 print(", url: {}".format(url))
-                next_site = site(url)
-                self.search_queue += [(one_url, url) for one_url in next_site.links]
-                current_site = self.all_sites.get(current_url)
-                current_site.links_to.append(next_site)
+                if url in self.all_sites:
+                    next_site = self.all_sites[url]
+                else:
+                    next_site = site(url)
+                    self.search_queue += [(one_url, url) for one_url in next_site.links]
+                current_site.links_to[url] = next_site
                 self.add_edge(current_url, current_site.name, url, next_site.name)
                 self.all_sites[url] = next_site
             i += 1
             self.search_times += 1
             self.search_queue.pop(0)
 
-    def is_url_valid(self, url, url_filter):
-        if url in self.all_sites:
+    def is_url_valid(self, current_site, url, url_filter):
+        if url in current_site.links_to:
             return False
         if url_filter:
             if url_filter['url_regex'] and not re.search(url_filter['url_regex'], url):
@@ -62,7 +65,7 @@ class net:
     def draw(self, output_dir, output_image_size):
         plt.figure(figsize=(output_image_size, output_image_size))
         nx.draw(self.graph, node_size=500, node_color="#fff", font_color="#000", font_size=18, node_shape="s", edge_color="b", width=3, font_weight="bold", with_labels=True, labels=nx.get_node_attributes(self.graph, 'name'))
-        res_path = os.path.join(output_dir if output_dir else 'res', '{}.png'.format(time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime(time.time()))))
+        res_path = os.path.join(output_dir if output_dir else 'res', '{}.png'.format(time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))))
         os.makedirs(os.path.dirname(res_path), exist_ok=True)
         plt.annotate('searched {} {} times'.format(self.root.url, self.search_times), xy=(1, 0), xycoords='axes fraction', ha='right', va='bottom', fontsize=24)
         plt.savefig(res_path)
@@ -74,16 +77,27 @@ class site:
     def __init__(self, url):
         self.url = url
         try:
-            with request.urlopen(url) as response:
+            headers = {'User-Agent': info['user_agent']}
+            req = request.Request(url, headers=headers)
+            with request.urlopen(req) as response:
                 html = response.read().decode(response.headers.get_content_charset())
         except KeyboardInterrupt:
             raise KeyboardInterrupt
+        except error.HTTPError as err:
+            print("Request HTTPError: {}".format(err))
+            html = "HTTPError"
+        except error.URLError as err:
+            print("Request URLError: {}".format(err))
+            html = "URLError"
+        except TypeError as err:
+            print("TypeError: {}".format(err))
+            html = "TypeError"
         except:
-            print("request error")
-            html = "error"
+            print("An unknown error happened")
+            html = 'error'
         soup = BeautifulSoup(html, 'html.parser')
         self.name, self.links = site.get_site_info(soup)
-        self.links_to = []
+        self.links_to = {}
 
     def __repr__(self):
         return self.url

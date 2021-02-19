@@ -4,23 +4,24 @@
 # The path of the data file to be loaded. Create a new search if `load_path` is empty.
 load_path:
 # The destination folder to be output, the default value is `res/YYYY-MM-dd HH:mm:ss/`
-output_dir: res/search3000
+output_dir: res/apple_cn_search3000
 # Number of searched required.
 search_num: 3000
 output_image_size: 50
 
 # start with
 # start searching at this URL.
-url: https://zh.wikipedia.org/wiki/Python
+url: https://apple.com.cn/
+user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36
 
 # URL filter
 # If you do not want to search all the links contained in the site, but filter some of the links you want.
 # For example `netloc_regex: zh.wikipedia.org` means that only sites with the domain name 'zh.wikipedia.org' are allowed to search
 url_filter:
   url_regex:
-  netloc_regex: zh.wikipedia.org
+  netloc_regex:
   path_regex:
 
 # site settings
 site_settings:
-  title_regex: ^[^-]*(?= -) # 匹配 ' -' 前的内容
+  title_regex: # 匹配 ' -' 前的内容

@@ -8,7 +8,7 @@ info = read_info()
 def run():
     n = init()
     try:
-        n.search(info.get('search_num'), info.get('url_limit'))
+        n.search(info.get('search_num'))
         n.draw(info.get('output_dir'), info.get('output_image_size'))
     except KeyboardInterrupt:
         print("Interrupt")

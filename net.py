@@ -8,6 +8,8 @@ import re
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimSun']
 plt.rcParams['axes.unicode_minus'] = False
+from info import *
+info = read_info()
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -22,13 +24,13 @@ class net:
         self.search_queue = [(one_url, url) for one_url in self.root.links]
         self.graph = nx.DiGraph()
 
-    def search(self, search_num=100, url_limit=None):
+    def search(self, search_num=100):
         i = 1
         while self.search_queue and i <= search_num:
             print("\rsearching {} / {}, search times: {}".format(i, search_num, self.search_times), end="")
             url, current_url = self.search_queue[0]
             url = urljoin(current_url, urldefrag(url)[0])
-            if self.is_url_valid(url, url_limit):
+            if self.is_url_valid(url, info.get('url_limit')):
                 print(", url: {}".format(url))
                 next_site = site(url)
                 self.search_queue += [(one_url, url) for one_url in next_site.links]
@@ -89,6 +91,9 @@ class site:
     @staticmethod
     def get_site_info(soup: BeautifulSoup):
         name = soup.title.text if soup.title else "x"
+        if info.get('site_settings'):
+            if info.get('site_settings')['title_regex']:
+                name = re.findall(info.get('site_settings')['title_regex'], name)[0]
         links = []
         for a in soup.find_all('a'):
             links.append(a.get('href'))

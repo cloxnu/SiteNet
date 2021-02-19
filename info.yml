@@ -13,3 +13,7 @@ url_limit:
   url_regex:
   netloc_regex: zh.wikipedia.org
   path_regex:
+
+# site settings
+site_settings:
+  title_regex: ^[^-]*(?= -) # 匹配 ' -' 前的内容

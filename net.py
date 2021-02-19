@@ -30,7 +30,7 @@ class net:
             print("\rsearching {} / {}, search times: {}".format(i, search_num, self.search_times), end="")
             url, current_url = self.search_queue[0]
             url = urljoin(current_url, urldefrag(url)[0])
-            if self.is_url_valid(url, info.get('url_limit')):
+            if self.is_url_valid(url, info.get('url_filter')):
                 print(", url: {}".format(url))
                 next_site = site(url)
                 self.search_queue += [(one_url, url) for one_url in next_site.links]
@@ -42,15 +42,15 @@ class net:
             self.search_times += 1
             self.search_queue.pop(0)
 
-    def is_url_valid(self, url, url_limit):
+    def is_url_valid(self, url, url_filter):
         if url in self.all_sites:
             return False
-        if url_limit:
-            if url_limit['url_regex'] and not re.search(url_limit['url_regex'], url):
+        if url_filter:
+            if url_filter['url_regex'] and not re.search(url_filter['url_regex'], url):
                 return False
-            if url_limit['netloc_regex'] and not re.search(url_limit['netloc_regex'], urlsplit(url)[1]):
+            if url_filter['netloc_regex'] and not re.search(url_filter['netloc_regex'], urlsplit(url)[1]):
                 return False
-            if url_limit['path_regex'] and not re.search(url_limit['path_regex'], urlsplit(url)[2]):
+            if url_filter['path_regex'] and not re.search(url_filter['path_regex'], urlsplit(url)[2]):
                 return False
 
         return True
@@ -93,7 +93,9 @@ class site:
         name = soup.title.text if soup.title else "x"
         if info.get('site_settings'):
             if info.get('site_settings')['title_regex']:
-                name = re.findall(info.get('site_settings')['title_regex'], name)[0]
+                title_res = re.findall(info.get('site_settings')['title_regex'], name)
+                if len(title_res) > 0:
+                    name = title_res[0]
         links = []
         for a in soup.find_all('a'):
             links.append(a.get('href'))

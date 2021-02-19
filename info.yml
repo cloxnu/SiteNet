@@ -1,15 +1,22 @@
+# Settings
 
 # load & output
+# The path of the data file to be loaded. Create a new search if `load_path` is empty.
 load_path:
-output_dir: res/test
-search_num: 10
+# The destination folder to be output, the default value is `res/YYYY-MM-dd HH:mm:ss/`
+output_dir: res/search3000
+# Number of searched required.
+search_num: 3000
 output_image_size: 50
 
 # start with
+# start searching at this URL.
 url: https://zh.wikipedia.org/wiki/Python
 
-# URL limit
-url_limit:
+# URL filter
+# If you do not want to search all the links contained in the site, but filter some of the links you want.
+# For example `netloc_regex: zh.wikipedia.org` means that only sites with the domain name 'zh.wikipedia.org' are allowed to search
+url_filter:
   url_regex:
   netloc_regex: zh.wikipedia.org
   path_regex:

@@ -18,7 +18,7 @@ def run():
 
 def save(n):
     output_dir = info.get('output_dir')
-    file_path = os.path.join(output_dir if output_dir else 'res', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    file_path = os.path.join(output_dir if output_dir else 'res', time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime(time.time())))
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, 'wb') as f:
         pickle.dump(n, f)

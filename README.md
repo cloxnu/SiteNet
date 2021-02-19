@@ -16,4 +16,4 @@ In the `info.yml`.
 
 The following is the relationship network of 'python' entries on wikipedia.
 
-![python](res/python_search3000/2021-02-19 15:04:07.png)
+![python](res/python_search3000/2021-02-19-15:04:07.png)

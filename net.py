@@ -62,7 +62,7 @@ class net:
     def draw(self, output_dir, output_image_size):
         plt.figure(figsize=(output_image_size, output_image_size))
         nx.draw(self.graph, node_size=500, node_color="#fff", font_color="#000", font_size=18, node_shape="s", edge_color="b", width=3, font_weight="bold", with_labels=True, labels=nx.get_node_attributes(self.graph, 'name'))
-        res_path = os.path.join(output_dir if output_dir else 'res', '{}.png'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
+        res_path = os.path.join(output_dir if output_dir else 'res', '{}.png'.format(time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime(time.time()))))
         os.makedirs(os.path.dirname(res_path), exist_ok=True)
         plt.annotate('searched {} {} times'.format(self.root.url, self.search_times), xy=(1, 0), xycoords='axes fraction', ha='right', va='bottom', fontsize=24)
         plt.savefig(res_path)

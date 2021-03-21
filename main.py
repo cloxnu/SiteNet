@@ -9,7 +9,9 @@ def run():
     n = init()
     try:
         n.search(info.get('search_num'))
-        n.draw(info.get('output_dir'), info.get('output_image_size'))
+        n.output(info.get('output_dir'))
+        if info.get('is_output_image'):
+            n.draw(info.get('output_dir'), info.get('output_image_size'))
     except KeyboardInterrupt:
         print("Interrupt")
     save(n)

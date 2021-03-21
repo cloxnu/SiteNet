@@ -3,10 +3,14 @@
 # load & output
 # The path of the data file to be loaded. Create a new search if `load_path` is empty.
 load_path:
-# The destination folder to be output, the default value is `res/YYYY-MM-dd HH:mm:ss/`
 output_dir: res/apple_cn_search3000
+# The destination folder to be output, the default value is `res/YYYY-MM-dd HH:mm:ss/`.
 # Number of searched required.
 search_num: 3000
+timeout: 10
+
+# The image can't be output only if the value of `is_output_image` is 'false' or empty.
+is_output_image: false
 output_image_size: 50
 
 # start with

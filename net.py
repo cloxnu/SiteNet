@@ -1,10 +1,8 @@
 import os
-from bs4 import BeautifulSoup
-from urllib import request, error
 from urllib.parse import urljoin, urldefrag, urlsplit
 import networkx as nx
 import time
-import re
+from sites import *
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimSun']
 plt.rcParams['axes.unicode_minus'] = False
@@ -27,12 +25,12 @@ class net:
     def search(self, search_num=100):
         i = 1
         while self.search_queue and i <= search_num:
-            print("\rsearching {} / {}, search times: {}".format(i, search_num, self.search_times), end="")
+            print("searching {} / {}, search times: {}".format(i, search_num, self.search_times))
             url, current_url = self.search_queue[0]
             url = urljoin(current_url, urldefrag(url)[0])
             current_site = self.all_sites.get(current_url)
             if self.is_url_valid(current_site, url, info.get('url_filter')):
-                print(", url: {}".format(url))
+                print("url: {}".format(url))
                 if url in self.all_sites:
                     next_site = self.all_sites[url]
                 else:
@@ -45,7 +43,8 @@ class net:
             self.search_times += 1
             self.search_queue.pop(0)
 
-    def is_url_valid(self, current_site, url, url_filter):
+    @staticmethod
+    def is_url_valid(current_site, url, url_filter):
         if url in current_site.links_to:
             return False
         if url_filter:
@@ -72,45 +71,24 @@ class net:
         print('\nresult saved at {}'.format(res_path))
         plt.show()
 
+    def output(self, output_dir):
+        def recur(current_site: site, depth: int):
+            nonlocal res, visited
+            if current_site.url in visited:
+                return
+            for i in range(depth):
+                res += "  "
+            res += "- {} || {}\n".format(current_site.name, current_site.url)
+            visited.add(current_site.url)
+            for next_site in current_site.links_to.values():
+                recur(next_site, depth + 1)
 
-class site:
-    def __init__(self, url):
-        self.url = url
-        try:
-            headers = {'User-Agent': info['user_agent']}
-            req = request.Request(url, headers=headers)
-            with request.urlopen(req) as response:
-                html = response.read().decode(response.headers.get_content_charset())
-        except KeyboardInterrupt:
-            raise KeyboardInterrupt
-        except error.HTTPError as err:
-            print("Request HTTPError: {}".format(err))
-            html = "HTTPError"
-        except error.URLError as err:
-            print("Request URLError: {}".format(err))
-            html = "URLError"
-        except TypeError as err:
-            print("TypeError: {}".format(err))
-            html = "TypeError"
-        except:
-            print("An unknown error happened")
-            html = 'error'
-        soup = BeautifulSoup(html, 'html.parser')
-        self.name, self.links = site.get_site_info(soup)
-        self.links_to = {}
+        res_path = os.path.join(output_dir if output_dir else 'res', '{}.md'.format(time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))))
+        os.makedirs(os.path.dirname(res_path), exist_ok=True)
+        res, visited = "", set()
+        recur(self.root, 0)
+        print(res)
 
-    def __repr__(self):
-        return self.url
+        with open(res_path, 'w') as f:
+            f.write(res)
 
-    @staticmethod
-    def get_site_info(soup: BeautifulSoup):
-        name = soup.title.text if soup.title else "x"
-        if info.get('site_settings'):
-            if info.get('site_settings')['title_regex']:
-                title_res = re.findall(info.get('site_settings')['title_regex'], name)
-                if len(title_res) > 0:
-                    name = title_res[0]
-        links = []
-        for a in soup.find_all('a'):
-            links.append(a.get('href'))
-        return name, links
